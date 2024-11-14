@@ -1,0 +1,43 @@
+library(ggplot2)
+library(tidyverse)
+library(dplyr)
+install.packages("haven")
+library(readr)
+install.packages("readr")
+library(haven)
+
+
+getwd()
+load("/Users/Fkukaj000/Downloads/ACS_2021_couples.RData")
+
+
+ols_out1 <- lm(he_more_than_5yrs_than_her ~ educ_hs + educ_somecoll + educ_college + educ_advdeg + AGE, data = trad_data)
+
+#  OLS Model
+pred_vals_ols1 <- predict(ols_out1, trad_data)
+
+# Classify predictions 
+pred_model_ols1 <- as.integer(pred_vals_ols1 > mean(pred_vals_ols1))
+
+
+table(pred = pred_model_ols1, true = trad_data$he_more_than_5yrs_than_her)
+
+
+# Logit Model
+model_logit1 <- glm(he_more_than_5yrs_than_her ~ educ_hs + educ_somecoll + educ_college + educ_advdeg + AGE,
+                    data = trad_data, family = binomial)
+
+
+summary(model_logit1)
+
+# Predict 
+pred_vals_logit <- predict(model_logit1, trad_data, type = "response")
+
+# Classify predictions 
+pred_model_logit1 <- as.integer(pred_vals_logit > mean(pred_vals_logit))
+
+# 
+table(pred = pred_model_logit1, true = trad_data$he_more_than_5yrs_than_her)
+
+
+Based on the results from the OLS model and Logit model , we can conclude that the Logit model was more accurate as its precision was 57.06% compared to 55.01% for the OLS model.
